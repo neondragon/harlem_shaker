@@ -1,0 +1,28 @@
+# Default-deny policy for .claude/.
+# Nothing here is committed unless explicitly whitelisted below.
+#
+# Rationale: .claude/ holds a mix of per-user state (settings.local.json,
+# personal skills, session droppings) and occasionally things you want
+# shared with collaborators (a team /deploy command, a project-specific
+# agent). Default-deny + explicit whitelist makes "shared" opt-in.
+
+*
+!.gitignore
+
+# --- Whitelist shared items below by uncommenting / adding ---
+
+# Shared skills (project-scoped commands like /deploy, /release):
+# !skills/
+# !skills/<skill-name>/
+# !skills/<skill-name>/**
+
+# Shared project commands:
+# !commands/
+# !commands/**
+
+# Shared project agents:
+# !agents/
+# !agents/**
+
+# Team-shared settings (NOT settings.local.json — that's per-user):
+# !settings.json
