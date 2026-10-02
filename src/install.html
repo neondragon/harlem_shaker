@@ -7,6 +7,12 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕺</text></svg>">
 <meta name="description" content="The 2013 Harlem Shake bookmarklet, back from the dead and self-contained.">
 <style>
+  /*
+   * The bookmarklet only shakes elements between 30px and 350px in both
+   * dimensions, so everything on this page is kept to blocks that size
+   * (cards capped at 21rem = 336px, title split into words). Otherwise
+   * clicking it here would leave the text standing still.
+   */
   :root {
     --bg: #fbf8f3;
     --fg: #1c1a17;
@@ -35,23 +41,43 @@
     font: 17px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
   }
   main {
-    max-width: 40rem;
+    max-width: 45rem;
     margin: 0 auto;
-    padding: 4rem 1rem 3rem;
+    padding: 3.5rem 1rem 3rem;
   }
   h1 {
-    font-size: clamp(2.4rem, 9vw, 3.6rem);
-    line-height: 1;
+    font-size: clamp(2.6rem, 11vw, 4rem);
+    line-height: 1.05;
     letter-spacing: -0.03em;
-    margin: 0 0 0.75rem;
+    margin: 0 0 1.5rem;
   }
-  .lede { font-size: 1.15rem; color: var(--muted); margin: 0 0 2.5rem; }
+  h1 span { display: inline-block; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: 1rem;
+  }
+  .card {
+    width: 100%;
+    max-width: 21rem;
+    justify-self: center;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    padding: 1.1rem 1.25rem;
+  }
+  .card h2 { font-size: 1.05rem; margin: 0 0 0.4rem; }
+  .card p { margin: 0 0 0.6rem; }
+  .card p:last-child, .card ol:last-child { margin-bottom: 0; }
+  .card ol { padding-left: 1.2rem; margin: 0; }
+  .card li { margin-bottom: 0.25rem; }
+  .lede { font-size: 1.1rem; }
   .install {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem 1.25rem;
-    margin-bottom: 0.75rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0.6rem;
   }
   .bookmarklet {
     display: inline-block;
@@ -66,68 +92,75 @@
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
   }
   .bookmarklet:active { cursor: grabbing; }
-  .hint { color: var(--muted); font-size: 0.95rem; }
-  .size { color: var(--muted); font-size: 0.85rem; margin: 0 0 3rem; }
-  h2 { font-size: 1.1rem; margin: 2.5rem 0 0.5rem; }
-  p { margin: 0 0 1rem; }
-  ol { padding-left: 1.25rem; margin: 0 0 1rem; }
-  li { margin-bottom: 0.35rem; }
+  .hint, .muted { color: var(--muted); font-size: 0.92rem; }
   .crew {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(4.5rem, 1fr));
     gap: 0.75rem;
-    margin: 2rem 0 0;
+    margin-top: 1rem;
   }
   .crew div {
-    height: 5.5rem;
+    height: 4.5rem;
     display: grid;
     place-items: center;
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: 0.75rem;
-    font-size: 2rem;
+    font-size: 1.9rem;
   }
-  footer {
-    border-top: 1px solid var(--line);
-    margin-top: 3rem;
-    padding-top: 1.25rem;
-    color: var(--muted);
-    font-size: 0.9rem;
-  }
+  kbd { font: inherit; font-size: 0.85em; padding: 0 0.3em; border: 1px solid var(--line); border-radius: 0.3em; }
   a { color: inherit; }
 </style>
 </head>
 <body>
 <main>
-  <h1>Harlem Shake</h1>
-  <p class="lede">The 2013 bookmarklet that made any web page do the Harlem Shake. It's been dead for years. Now it isn't.</p>
+  <h1><span>Harlem</span> <span>Shake</span></h1>
 
-  <div class="install">
-    <a class="bookmarklet" href="{{BOOKMARKLET}}">Harlem Shake</a>
-    <span class="hint">Drag it to your bookmarks bar, or click it to try it here.</span>
+  <div class="grid">
+    <div class="card lede">
+      <p>The 2013 bookmarklet that made any web page do the Harlem Shake. It's been dead for years. Now it isn't.</p>
+    </div>
+
+    <div class="card install">
+      <a class="bookmarklet" href="{{BOOKMARKLET}}">Harlem Shake</a>
+      <span class="hint">Drag it to your bookmarks bar, or click it to try it here. Sound on.</span>
+    </div>
+
+    <div class="card">
+      <h2>How to use it</h2>
+      <ol>
+        <li>Show your bookmarks bar (<kbd>⌘⇧B</kbd> or <kbd>Ctrl+Shift+B</kbd>).</li>
+        <li>Drag the red button onto it.</li>
+        <li>Open any page with a bit going on, and click the bookmark.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>What happens</h2>
+      <p>One thing starts shaking. Then the drop hits and everything joins in.</p>
+      <p class="muted">{{SIZE}}, song included.</p>
+    </div>
+
+    <div class="card">
+      <h2>Why it broke</h2>
+      <p>Moovweb's original loaded its song and stylesheet from an S3 bucket that no longer exists. Many sites' security policies would block those loads anyway.</p>
+    </div>
+
+    <div class="card">
+      <h2>What changed</h2>
+      <p>The stylesheet and song are inlined and the song plays through Web Audio, so it makes no network requests. Pages still have to allow inline styles, which most do.</p>
+    </div>
   </div>
-  <p class="size">{{SIZE}}, song included. Turn your sound on.</p>
-
-  <h2>How to use it</h2>
-  <ol>
-    <li>Show your bookmarks bar (<kbd>⌘</kbd><kbd>⇧</kbd><kbd>B</kbd> or <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>B</kbd>).</li>
-    <li>Drag the red button onto it.</li>
-    <li>Open any page with a bit going on, and click the bookmark.</li>
-  </ol>
-  <p>One thing starts shaking. Then the drop hits.</p>
-
-  <h2>Why it broke, and what changed</h2>
-  <p>Moovweb's original loaded its song and stylesheet from an S3 bucket that no longer exists. Even with the bucket back, many sites' Content Security Policies would block loading them.</p>
-  <p>This version carries everything with it: the stylesheet and the song are inlined, and the song plays through the Web Audio API, so the bookmarklet makes no network requests. It still needs the page to allow inline styles, which most do. A few sites block bookmarklets outright; there's nothing to be done about those.</p>
 
   <div class="crew" aria-hidden="true">
     <div>🕺</div><div>💃</div><div>🐴</div><div>🤿</div><div>🎺</div><div>🥁</div><div>🦄</div><div>🪩</div>
   </div>
 
-  <footer>
-    Original bookmarklet and stylesheet by <a href="https://github.com/moovweb/harlem_shaker">Moovweb</a>.
-    Song: “Harlem Shake” by Baauer.
-  </footer>
+  <div class="grid" style="margin-top: 1rem">
+    <div class="card muted">
+      Original bookmarklet and stylesheet by <a href="https://github.com/moovweb/harlem_shaker">Moovweb</a>. Song: “Harlem Shake” by Baauer.
+    </div>
+  </div>
 </main>
 </body>
 </html>
