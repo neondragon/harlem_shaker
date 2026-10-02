@@ -8,7 +8,7 @@ It's also tuned for modern sites. The site's logo leads the dance: it moves to t
 
 ## Install
 
-Visit the install page (GitHub Pages) and drag the button to your bookmarks bar. Then open any page and click it.
+Go to **https://neondragon.github.io/harlem_shaker/** and drag the button to your bookmarks bar. Then go to any other website and click the bookmark.
 
 ## How it's built
 
