@@ -1,0 +1,85 @@
+/*
+ * Moovweb's harlem-shake-style.css, cleaned up.
+ *
+ * Animations are from Animate.css (http://daneden.me/animate), which
+ * Moovweb modified for their use. Changes from their version:
+ * - vendor-prefixed duplicates dropped
+ * - stray backtick in the wobble keyframes removed (it broke the rule)
+ * - @keyframes swing added; .im_drunk referenced it but it was never defined
+ * - references to the undefined `spin` and `flash` animations dropped
+ */
+
+.mw-strobe_light {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 100000;
+  background-color: rgba(250, 250, 250, 0.8);
+  display: block;
+}
+
+/* Base classes set timing; the im_* class sets the animation name. */
+.mw-harlem_shake_me {
+  transition: all 0.8s ease-in-out;
+  animation: 0.4s linear infinite both;
+}
+
+.mw-harlem_shake_slow {
+  transition: all 3.2s ease-in-out;
+  animation: 1.6s linear infinite both;
+}
+
+@keyframes wobble {
+  0% { transform: translateX(0%); }
+  15% { transform: translateX(-15%) rotate(-5deg); }
+  30% { transform: translateX(12%) rotate(3deg); }
+  45% { transform: translateX(-9%) rotate(-3deg); }
+  60% { transform: translateX(6%) rotate(2deg); }
+  75% { transform: translateX(-3%) rotate(-1deg); }
+  100% { transform: translateX(0%); }
+}
+.im_first {
+  animation-name: wobble;
+}
+
+@keyframes swing {
+  20% { transform: rotate(15deg); }
+  40% { transform: rotate(-10deg); }
+  60% { transform: rotate(5deg); }
+  80% { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}
+.im_drunk {
+  transform-origin: top center;
+  animation-name: swing;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+.im_baked {
+  animation-name: shake;
+}
+
+@keyframes bounceIn {
+  0% { opacity: 0; transform: scale(0.3); }
+  50% { opacity: 1; transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+.im_trippin {
+  animation-name: bounceIn;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+.im_blown {
+  animation-name: pulse;
+}
