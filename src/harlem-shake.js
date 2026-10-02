@@ -26,7 +26,7 @@
   var LINE_UP_AHEAD = 1;
   // The dancing stops this long before the song does; the clip's tail is
   // near-silent, so stopping on "ended" feels late.
-  var END_BEFORE = 0.5;
+  var END_BEFORE = 1;
 
   var BEAT_MS = 400;
   var FLASH_MS = 100;
