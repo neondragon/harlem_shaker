@@ -24,6 +24,9 @@
   var SLOWMO_AT = 28.4;
   var SLOWMO_RATE = 0.25;
   var LINE_UP_AHEAD = 1;
+  // The dancing stops this long before the song does; the clip's tail is
+  // near-silent, so stopping on "ended" feels late.
+  var END_BEFORE = 0.5;
 
   var BEAT_MS = 400;
   var FLASH_MS = 100;
@@ -575,7 +578,8 @@
       setTimeout(soloStep, FIRST_AT * 1000),
       setTimeout(lineUpStep, (EVERYONE_AT - LINE_UP_AHEAD) * 1000),
       setTimeout(dropStep, EVERYONE_AT * 1000),
-      setTimeout(slowmoStep, SLOWMO_AT * 1000)
+      setTimeout(slowmoStep, SLOWMO_AT * 1000),
+      setTimeout(endStep, (buffer.duration - END_BEFORE) * 1000)
     ];
     src.onended = function () {
       endStep();
