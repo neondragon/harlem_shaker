@@ -8,10 +8,10 @@
 <meta name="description" content="The 2013 Harlem Shake bookmarklet, back from the dead and self-contained.">
 <style>
   /*
-   * The bookmarklet only shakes elements between 30px and 350px in both
-   * dimensions, so everything on this page is kept to blocks that size
-   * (cards capped at 21rem = 336px, title split into words). Otherwise
-   * clicking it here would leave the text standing still.
+   * The bookmarklet doesn't shake big containers (more than a quarter of
+   * the viewport), so the page is kept to cards and the title is split into
+   * words. Otherwise clicking it here would leave the text standing still.
+   * The title is marked as the logo so it leads the dance.
    */
   :root {
     --bg: #fbf8f3;
@@ -46,6 +46,7 @@
     padding: 3.5rem 1rem 3rem;
   }
   h1 {
+    display: inline-block;
     font-size: clamp(2.6rem, 11vw, 4rem);
     line-height: 1.05;
     letter-spacing: -0.03em;
@@ -114,7 +115,7 @@
 </head>
 <body>
 <main>
-  <h1><span>Harlem</span> <span>Shake</span></h1>
+  <h1 class="logo"><span>Harlem</span> <span>Shake</span></h1>
 
   <div class="grid">
     <div class="card lede">
@@ -148,7 +149,7 @@
 
     <div class="card">
       <h2>What changed</h2>
-      <p>The stylesheet and song are inlined and the song plays through Web Audio, so it makes no network requests. Pages still have to allow inline styles, which most do.</p>
+      <p>The song is inlined and plays through Web Audio, and the dancing runs on the Web Animations API, so it makes no network requests and needs no stylesheet. It also finds the site's logo to lead the dance.</p>
     </div>
   </div>
 
