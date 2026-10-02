@@ -46,14 +46,18 @@
   var FIRST_MAX_WIDTH = 0.5;
   var FIRST_MAX_HEIGHT = 0.3;
   var TOP_BAND = 0.45;
+  // Where site headers usually are; a logo-ish thing here scores higher.
+  var HEADER_BAND = 0.15;
   // With no logo, the first visible dancer this small or smaller.
   var FALLBACK_MAX_AREA = 0.05;
 
-  // During the build-up the first dancer moves to the centre and grows to
-  // fill this much of the viewport.
-  var SPOT_WIDTH = 0.4;
-  var SPOT_HEIGHT = 0.3;
-  var SPOT_MAX_SCALE = 8;
+  // During the build-up the first dancer slowly swells to this scale (no
+  // wider than the viewport), drifting this fraction of the way toward the
+  // centre: growth draws the eye to a small logo, the drift keeps a corner
+  // logo on screen.
+  var SPOT_SCALE = 2;
+  var SPOT_MAX_WIDTH = 1;
+  var SPOT_DRIFT = 0.25;
 
   if (window.__harlemShake) {
     return;
@@ -208,8 +212,15 @@
   function logoScore(el, r) {
     var score = 0;
     var text = describe(el);
-    if (/logo|brand/.test(text)) {
+    if (/logo/i.test(el.id)) {
+      score += 4;
+    } else if (/logo/.test(text)) {
       score += 3;
+    } else if (/brand/.test(text)) {
+      score += 2;
+    }
+    if (r.top < vh * HEADER_BAND) {
+      score += 1;
     }
     if (el.tagName === "A" && el.host === location.host && el.pathname === "/") {
       score += 2;
@@ -236,8 +247,14 @@
   }
 
   // The site's logo if we can find one near the top, else the first visible
-  // dancer in reading order.
+  // dancer in reading order. If a cookie or consent dialog covers the whole
+  // page, nothing is "on top", so look again without that check: the
+  // spotlight floats above the dialog anyway.
   function findFirst() {
+    return findFirstWhere(true) || findFirstWhere(false);
+  }
+
+  function findFirstWhere(mustBeOnTop) {
     var els = allElements();
     var best = null;
     var bestScore = 2;
@@ -253,7 +270,7 @@
         continue;
       }
       var style = getComputedStyle(el);
-      if (!isShown(el, style) || !onTop(el, r)) {
+      if (!isShown(el, style) || (mustBeOnTop && !onTop(el, r))) {
         continue;
       }
       var mover = movable(el, style);
@@ -267,7 +284,8 @@
     }
     var dancers = findDancers().filter(function (el) {
       var r = el.getBoundingClientRect();
-      return r.width * r.height <= vw * vh * FALLBACK_MAX_AREA && onTop(el, r);
+      return r.width * r.height <= vw * vh * FALLBACK_MAX_AREA && r.top >= 0 && r.top < vh &&
+        (!mustBeOnTop || onTop(el, r));
     });
     dancers.sort(function (a, b) {
       var ra = a.getBoundingClientRect();
@@ -389,13 +407,14 @@
     return "white";
   }
 
-  // During the build-up the first dancer slides to the middle of the screen
-  // and keeps growing until the drop. A clone in a fixed layer does the
-  // dancing, so the page's stacking and overflow can't bury or clip it; the
-  // original fades out meanwhile and is back in place for the drop.
+  // During the build-up the first dancer swells in place. A clone in a fixed
+  // layer does the dancing, so the page's stacking and overflow can't bury
+  // or clip it; the original fades out meanwhile and is back in place for
+  // the drop.
   function spotlight(el) {
     var r = el.getBoundingClientRect();
-    var s = Math.max(1, Math.min(vw * SPOT_WIDTH / r.width, vh * SPOT_HEIGHT / r.height, SPOT_MAX_SCALE));
+    var s = Math.max(1, Math.min(SPOT_SCALE, vw * SPOT_MAX_WIDTH / r.width));
+    var halo = Math.max(4, r.height * 0.25);
     var clone = el.cloneNode(true);
     var bg = backdrop(el);
     bakeStyles(el, clone);
@@ -403,8 +422,8 @@
     // over whatever ends up behind it.
     Object.assign(clone.style, {
       backgroundColor: bg,
-      boxShadow: "0 0 0 " + Math.max(4, r.height * 0.25) + "px " + bg,
-      borderRadius: Math.max(4, r.height * 0.25) + "px"
+      boxShadow: "0 0 0 " + halo + "px " + bg,
+      borderRadius: halo + "px"
     });
     Object.assign(clone.style, {
       position: "fixed",
@@ -424,13 +443,21 @@
     spotlit = clone;
 
     play(el, [{ opacity: 0 }, { opacity: 0 }], { duration: 1, fill: "forwards" });
-    var dx = vw / 2 - (r.left + r.width / 2);
-    var dy = vh / 2 - (r.top + r.height / 2);
+    // Drift toward the centre, then keep the grown box (and its halo) on
+    // screen.
+    var cx = r.left + r.width / 2;
+    var cy = r.top + r.height / 2;
+    var margin = halo * s + 8;
+    function clamp(c, size, view) {
+      var half = size * s / 2 + margin;
+      return half * 2 >= view ? view / 2 : Math.min(Math.max(c, half), view - half);
+    }
+    var dx = clamp(cx + (vw / 2 - cx) * SPOT_DRIFT, r.width, vw) - cx;
+    var dy = clamp(cy + (vh / 2 - cy) * SPOT_DRIFT, r.height, vh) - cy;
     play(clone, [
-      { offset: 0, transform: px(0, 0) + " scale(1)", easing: "ease-out" },
-      { offset: 0.15, transform: px(dx, dy) + " scale(" + (1 + (s - 1) * 0.4) + ")", easing: "ease-in" },
-      { offset: 1, transform: px(dx, dy) + " scale(" + s + ")" }
-    ], { duration: (EVERYONE_AT - FIRST_AT) * 1000, fill: "forwards" });
+      { transform: px(0, 0) + " scale(1)" },
+      { transform: px(dx, dy) + " scale(" + s + ")" }
+    ], { duration: (EVERYONE_AT - FIRST_AT) * 1000, easing: "ease-in-out", fill: "forwards" });
     dance(clone, "wobble");
   }
 
