@@ -32,24 +32,22 @@ execFileSync("ffmpeg", [
 ]);
 const audio = readFileSync(ENCODED).toString("base64");
 
-const css = (await transform(readFileSync("src/harlem-shake.css", "utf8"), {
-  loader: "css",
-  minify: true,
-})).code.trim();
-
 const source = readFileSync("src/harlem-shake.js", "utf8");
-for (const placeholder of ['"__CSS__"', '"__AUDIO__"']) {
-  if (!source.includes(placeholder)) throw new Error(`src/harlem-shake.js lacks ${placeholder}`);
-}
-const js = (await transform(
-  source
-    .replace('"__CSS__"', () => JSON.stringify(css))
-    .replace('"__AUDIO__"', () => JSON.stringify(audio)),
-  { loader: "js", minify: true, target: "es2017" },
-)).code.trim();
+if (!source.includes('"__AUDIO__"')) throw new Error('src/harlem-shake.js lacks "__AUDIO__"');
+const minify = (code, test) => transform(code, {
+  loader: "js",
+  minify: true,
+  target: "es2017",
+  define: { HS_TEST: String(test) },
+});
+
+// Test build: no song, timeline steps exposed on window.__HS (see test/).
+writeFileSync("build/harness.js", (await minify(source.replace('"__AUDIO__"', '""'), true)).code);
+
+const js = (await minify(source.replace('"__AUDIO__"', () => JSON.stringify(audio)), false)).code.trim();
 
 // Browsers percent-decode javascript: URLs before running them, so a
-// literal % (all over the CSS keyframes) has to be escaped.
+// literal % has to be escaped.
 const bookmarklet = "javascript:" + js.replace(/%/g, "%25");
 
 const escapeAttr = (s) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
