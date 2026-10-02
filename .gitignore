@@ -59,3 +59,7 @@ secrets.json
 # DerivedData/
 # *.xcworkspace/xcuserdata/
 # *.xcodeproj/xcuserdata/
+
+# Build
+node_modules/
+build/

@@ -10,7 +10,14 @@ Visit the install page (GitHub Pages) and drag the button to your bookmarks bar.
 
 ## How it's built
 
-The repo holds readable sources: the unminified script and the CSS, which is Moovweb's original stylesheet (a modified Animate.css). A small build step re-encodes the audio, inlines it and the CSS, minifies the result into a `javascript:` URL, and renders the install page. The audio is a local build input and isn't committed as a file; it only exists inlined in the built output.
+The repo holds readable sources in `src/`: the unminified script, the CSS (Moovweb's original stylesheet, a modified Animate.css, cleaned up), and the install page template. `npm run build` needs Node and ffmpeg. It fetches the song from [Moovweb's repo](https://github.com/moovweb/harlem_shaker) into `audio/` (gitignored), re-encodes it to 48 kbps mono, inlines it and the CSS into the script, minifies it into a `javascript:` URL, and writes the install page to `docs/index.html`.
+
+```sh
+npm install
+npm run build
+```
+
+This repo never hosts the mp3 as a file. It exists only as base64 inside the built page, which is committed so GitHub Pages can serve it from `docs/` on `main`.
 
 ## Credits
 
