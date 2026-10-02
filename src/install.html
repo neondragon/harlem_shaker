@@ -11,7 +11,8 @@
    * The bookmarklet doesn't shake big containers (more than a quarter of
    * the viewport), so the page is kept to cards and the title is split into
    * words. Otherwise clicking it here would leave the text standing still.
-   * The title is marked as the logo so it leads the dance.
+   * The title is marked as the logo so it leads the dance. The call-to-
+   * action card spans the grid but stays under a quarter of a laptop screen.
    */
   :root {
     --bg: #fbf8f3;
@@ -21,6 +22,7 @@
     --line: #e6e0d6;
     --accent: #e0322b;
     --accent-fg: #ffffff;
+    --bar: #efeae2;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -31,6 +33,7 @@
       --line: #34312d;
       --accent: #ff4d43;
       --accent-fg: #ffffff;
+      --bar: #2a2724;
     }
   }
   * { box-sizing: border-box; }
@@ -50,7 +53,7 @@
     font-size: clamp(2.6rem, 11vw, 4rem);
     line-height: 1.05;
     letter-spacing: -0.03em;
-    margin: 0 0 1.5rem;
+    margin: 0 0 0.5rem;
   }
   h1 span { display: inline-block; }
   .grid {
@@ -72,27 +75,80 @@
   .card p:last-child, .card ol:last-child { margin-bottom: 0; }
   .card ol { padding-left: 1.2rem; margin: 0; }
   .card li { margin-bottom: 0.25rem; }
-  .lede { font-size: 1.1rem; }
-  .install {
+  .tagline { font-size: 1.15rem; color: var(--muted); margin: 0 0 1.5rem; max-width: 34rem; }
+
+  /* The call to action: a mock bookmarks bar with an empty slot, an arrow
+     up to it, and the button. */
+  .cta {
+    grid-column: 1 / -1;
+    max-width: none;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 0.6rem;
+    align-items: center;
+    text-align: center;
+    padding: 1.25rem 1.25rem 1.4rem;
+    border: 2px solid var(--accent);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.6rem;
+    border-radius: 0.6rem;
+    background: var(--bar);
+    max-width: 100%;
+  }
+  .bar i {
+    display: block;
+    width: 3.2rem;
+    height: 0.7rem;
+    border-radius: 999px;
+    background: var(--line);
+  }
+  .slot {
+    padding: 0.3rem 0.8rem;
+    border: 2px dashed var(--accent);
+    border-radius: 0.45rem;
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .arrow {
+    font-size: 1.8rem;
+    line-height: 1;
+    color: var(--accent);
+    margin: 0.35rem 0 0.4rem;
   }
   .bookmarklet {
     display: inline-block;
-    padding: 0.9rem 1.6rem;
+    padding: 1rem 2rem;
     border-radius: 999px;
     background: var(--accent);
     color: var(--accent-fg);
-    font-weight: 700;
-    font-size: 1.1rem;
+    font-weight: 800;
+    font-size: 1.35rem;
     text-decoration: none;
     cursor: grab;
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2), 0 8px 24px rgba(224, 50, 43, 0.3);
+    animation: nudge 2.4s ease-in-out infinite;
   }
-  .bookmarklet:active { cursor: grabbing; }
+  .bookmarklet:active { cursor: grabbing; animation: none; }
+  /* A hint at which way to drag it. */
+  @keyframes nudge {
+    0%, 60%, 100% { transform: translateY(0); }
+    75% { transform: translateY(-6px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bookmarklet { animation: none; }
+  }
+  .cta-text { font-size: 1.15rem; margin: 1rem 0 0.35rem; }
+  .cta .hint { margin: 0; }
+  .touch-only { display: none; }
+  @media (pointer: coarse) {
+    .touch-only { display: block; }
+    .desktop-only { display: none; }
+  }
   .hint, .muted { color: var(--muted); font-size: 0.92rem; }
   .crew {
     display: grid;
@@ -117,21 +173,24 @@
 <main>
   <h1 class="logo"><span>Harlem</span> <span>Shake</span></h1>
 
-  <div class="grid">
-    <div class="card lede">
-      <p>The 2013 bookmarklet that made any web page do the Harlem Shake. It's been dead for years. Now it isn't.</p>
-    </div>
+  <p class="tagline">The 2013 bookmarklet that made any web page do the Harlem Shake. Dead for years. Now it isn't.</p>
 
-    <div class="card install">
-      <a class="bookmarklet" href="{{BOOKMARKLET}}">Harlem Shake</a>
-      <span class="hint">Drag it to your bookmarks bar, or click it to try it here. Sound on.</span>
+  <div class="grid">
+    <div class="card cta">
+      <div class="bar" aria-hidden="true"><i></i><i></i><span class="slot">drop it here</span><i></i></div>
+      <div class="arrow" aria-hidden="true">↑</div>
+      <a class="bookmarklet" href="{{BOOKMARKLET}}">🕺 Harlem Shake</a>
+      <p class="cta-text"><strong>Drag the button to your bookmarks bar.</strong> Then click it on any page.</p>
+      <p class="hint desktop-only">No bookmarks bar? <kbd>⌘⇧B</kbd> on Mac, <kbd>Ctrl+Shift+B</kbd> elsewhere.</p>
+      <p class="hint">Or click it to try it right here. Sound on.</p>
+      <p class="hint touch-only">On a phone, bookmarklets are fiddly; it's best on a computer. You can still tap it to try it here.</p>
     </div>
 
     <div class="card">
-      <h2>How to use it</h2>
+      <h2>Step by step</h2>
       <ol>
         <li>Show your bookmarks bar (<kbd>⌘⇧B</kbd> or <kbd>Ctrl+Shift+B</kbd>).</li>
-        <li>Drag the red button onto it.</li>
+        <li>Drag the red button onto it. It becomes a bookmark called “🕺 Harlem Shake”.</li>
         <li>Open any page with a bit going on, and click the bookmark.</li>
       </ol>
     </div>
